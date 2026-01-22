@@ -35,13 +35,13 @@ export const FreightQuoteForm: React.FC = () => {
       specialRequirements: '',
     },
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null;
     message: string;
   }>({ type: null, message: '' });
-  const [serviceAvailable, setServiceAvailable] = useState(true);
 
   const handlePersonalChange = (data: Partial<typeof formData.personal>) => {
     setFormData((prev) => ({
@@ -85,23 +85,6 @@ export const FreightQuoteForm: React.FC = () => {
     });
   };
 
-  const handleVolumetricWeightChange = (weight: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      volumetricWeight: weight,
-    }));
-  };
-
-  const checkServiceAvailability = () => {
-    // Simple check - you can enhance this with actual logic
-    const { origin, destination } = formData.service;
-    if (origin && destination && origin.toLowerCase() === destination.toLowerCase()) {
-      setServiceAvailable(false);
-    } else {
-      setServiceAvailable(true);
-    }
-  };
-
   const validateForm = (): boolean => {
     try {
       freightQuoteFormSchema.parse(formData);
@@ -109,14 +92,14 @@ export const FreightQuoteForm: React.FC = () => {
       return true;
     } catch (error: any) {
       const validationErrors: Record<string, string> = {};
-
+      
       if (error.errors) {
         error.errors.forEach((err: any) => {
           const path = err.path.join('.');
           validationErrors[path] = err.message;
         });
       }
-
+      
       setErrors(validationErrors);
       return false;
     }
@@ -124,19 +107,11 @@ export const FreightQuoteForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     if (!validateForm()) {
       setSubmitStatus({
         type: 'error',
         message: 'Please fix the errors in the form before submitting.',
-      });
-      return;
-    }
-
-    if (!serviceAvailable) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Service not available for selected route.',
       });
       return;
     }
@@ -146,7 +121,7 @@ export const FreightQuoteForm: React.FC = () => {
 
     try {
       const response = await axios.post(`${API_BASE_URL}/quote/submit`, formData);
-
+      
       setSubmitStatus({
         type: 'success',
         message: response.data.message || 'Quote request submitted successfully! We\'ll respond within 24 hours.',
@@ -209,6 +184,14 @@ export const FreightQuoteForm: React.FC = () => {
           errors={errors}
         />
 
+        <div className="divider">
+          <span className="divider-icon">🔍</span>
+          <span className="divider-text">Cost Estimation & Preview</span>
+        </div>
+        <p className="info-text">
+          All pricing estimates should include advisement about the variables based on current market conditions.
+        </p>
+
         <ServiceRequirements
           data={formData.service}
           onChange={handleServiceChange}
@@ -221,12 +204,6 @@ export const FreightQuoteForm: React.FC = () => {
           errors={errors}
         />
 
-        {!serviceAvailable && (
-          <div className="alert alert-warning">
-            ⚠️ Service not reachable for the selected origin and destination
-          </div>
-        )}
-
         {submitStatus.type && (
           <div className={`alert alert-${submitStatus.type}`}>
             {submitStatus.type === 'success' ? '✅' : '❌'} {submitStatus.message}
@@ -236,7 +213,7 @@ export const FreightQuoteForm: React.FC = () => {
         <button
           type="submit"
           className="submit-button"
-          disabled={isSubmitting || !serviceAvailable}
+          disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
