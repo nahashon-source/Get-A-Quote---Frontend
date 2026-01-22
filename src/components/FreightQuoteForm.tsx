@@ -184,10 +184,6 @@ export const FreightQuoteForm: React.FC = () => {
           errors={errors}
         />
 
-        <p className="info-text">
-          All pricing estimates should include advisement about the variables based on current market conditions.
-        </p>
-
         <ServiceRequirements
           data={formData.service}
           onChange={handleServiceChange}
