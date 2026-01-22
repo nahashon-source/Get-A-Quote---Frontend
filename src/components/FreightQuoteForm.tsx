@@ -184,10 +184,6 @@ export const FreightQuoteForm: React.FC = () => {
           errors={errors}
         />
 
-        <div className="divider">
-          <span className="divider-icon">🔍</span>
-          <span className="divider-text">Cost Estimation & Preview</span>
-        </div>
         <p className="info-text">
           All pricing estimates should include advisement about the variables based on current market conditions.
         </p>
