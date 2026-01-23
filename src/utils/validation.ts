@@ -18,20 +18,9 @@ export const serviceRequirementsSchema = z.object({
   specialHandling: z.string().optional(),
 });
 
-export const cargoInformationSchema = z.object({
-  cargoDescription: z.string().min(10, 'Please provide a detailed description (min 10 characters)'),
-  weight: z.string().min(1, 'Weight is required'),
-  packagingType: z.string().min(1, 'Please select a packaging type'),
-  cargoValue: z.string().min(1, 'Cargo value is required'),
-  currency: z.string().min(1, 'Please select a currency'),
-  urgencyLevel: z.string().min(1, 'Please select urgency level'),
-  specialRequirements: z.string().optional(),
-});
-
 export const freightQuoteFormSchema = z.object({
   personal: personalInfoSchema,
   service: serviceRequirementsSchema,
-  cargo: cargoInformationSchema,
 });
 
 export type FreightQuoteFormData = z.infer<typeof freightQuoteFormSchema>;
